@@ -1,11 +1,15 @@
 #include <enet/enet.h>
 #include <stdio.h>
 #include <iostream>
+#include <thread>
+#include <string>
 
 using namespace std;
 
 ENetAddress address;
 ENetHost* server;
+ENetEvent event;
+string serverName = "";
 
 bool CreateServer()
 {
@@ -24,6 +28,72 @@ bool CreateServer()
     return server != NULL;
 }
 
+void SendMessageToClient()
+{
+    string message;
+    cout << "Enter q to quit" << endl;
+    cin.ignore(256, '\n');
+
+    while (message != "q" && message != "Q")
+    {
+        getline(cin, message);
+        message = serverName + ": " + message;
+
+        ENetPacket* packet = enet_packet_create(message.c_str(),
+            strlen(message.c_str()) + 1,
+            ENET_PACKET_FLAG_RELIABLE);
+
+        enet_host_broadcast(server, 0, packet);
+
+        enet_host_flush(server);
+    }
+
+    cout << "Ending chat" << endl;
+}
+
+void RunServer()
+{
+    while (1)
+    {
+        /* Wait up to 1000 milliseconds for an event. */
+        while (enet_host_service(server, &event, 1000) > 0)
+        {
+            switch (event.type)
+            {
+            case ENET_EVENT_TYPE_CONNECT:
+                cout << endl << "A new client connected from "
+                    << event.peer->address.host
+                    << ":" << event.peer->address.port
+                    << endl;
+
+                /* Store any relevant client information here. */
+                event.peer->data = (void*)("Client information");
+
+                break;
+            case ENET_EVENT_TYPE_RECEIVE:
+                cout << (char*)event.packet->data << endl;
+                //<< "was received from " << (char*)event.peer->data
+                //<< " on channel " << event.channelID << endl;
+            /* Clean up the packet now that we're done using it. */
+                enet_packet_destroy(event.packet);
+
+                break;
+
+            case ENET_EVENT_TYPE_DISCONNECT:
+                cout << (char*)event.peer->data << "disconnected." << endl;
+                /* Reset the peer's client information. */
+                event.peer->data = NULL;
+            }
+        }
+    }
+}
+
+void InputServerName()
+{
+    cout << "Enter a name for server: ";
+    cin >> serverName;
+}
+
 int main(int argc, char** argv)
 {
     if (enet_initialize() != 0)
@@ -32,14 +102,21 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    cout << "1) create server" << endl;
-
     if (!CreateServer())
     {
         fprintf(stderr,
             "An error occurred while trying to create an ENet server host.\n");
         exit(EXIT_FAILURE);
     }
+
+    cout << "Server is created" << endl;
+
+    InputServerName();
+    thread RunServerThread(RunServer);
+    thread SendMessageToClientThread(SendMessageToClient);
+
+    RunServerThread.join();
+    SendMessageToClientThread.join();
    
     if (server != NULL)
     {
