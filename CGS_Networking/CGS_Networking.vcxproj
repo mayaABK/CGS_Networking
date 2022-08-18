@@ -145,9 +145,6 @@
   <ItemGroup>
     <ClCompile Include="CGS_Networking.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="NumberGamePacketTypes.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

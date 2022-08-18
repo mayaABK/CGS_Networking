@@ -57,13 +57,14 @@ void SimpleClient::ConnectToServer()
 void SimpleClient::SendMessageToServer()
 {
     string message;
+    string input;
     cout << "Enter q to quit" << endl;
     cin.ignore(256, '\n');
 
-    while (message != "q" && message != "Q")
+    while (input != "q" && input != "Q")
     {
-        getline(cin, message);
-        message = simpleClientName + ": " + message;
+        getline(cin, input);
+        message = simpleClientName + ": " + input;
 
         ENetPacket* packet = enet_packet_create(message.c_str(),
             strlen(message.c_str()) + 1,
@@ -104,7 +105,7 @@ void SimpleClient::InputSimpleClientName()
     cin >> simpleClientName;
 }
 
-int SimpleClient::main()
+int SimpleClient::run()
 {
     if (enet_initialize() != 0)
     {

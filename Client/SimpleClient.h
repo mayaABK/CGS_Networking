@@ -3,7 +3,7 @@
 class SimpleClient
 {
 public:
-	int main();
+	int run();
 private:
 	bool CreateSimpleClient();
 	void ConnectToServer();

@@ -33,13 +33,14 @@ bool SimpleServer::CreateServer()
 void SimpleServer::SendMessageToClient()
 {
     string message;
+    string input;
     cout << "Enter q to quit" << endl;
     cin.ignore(256, '\n');
 
-    while (message != "q" && message != "Q")
+    while (input != "q" && input != "Q")
     {
-        getline(cin, message);
-        message = serverName + ": " + message;
+        getline(cin, input);
+        message = serverName + ": " + input;
 
         ENetPacket* packet = enet_packet_create(message.c_str(),
             strlen(message.c_str()) + 1,
@@ -96,7 +97,7 @@ void SimpleServer::InputServerName()
     cin >> serverName;
 }
 
-int SimpleServer::main()
+int SimpleServer::run()
 {
     if (enet_initialize() != 0)
     {

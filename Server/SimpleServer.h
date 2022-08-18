@@ -3,7 +3,7 @@
 class SimpleServer
 {
 public:
-	int main();
+	int run();
 
 private:
 	void InputServerName();
