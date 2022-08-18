@@ -4,6 +4,8 @@
 #include <thread>
 #include <string>
 
+#include "SimpleServer.h"
+
 using namespace std;
 
 ENetAddress address;
@@ -11,7 +13,7 @@ ENetHost* server;
 ENetEvent event;
 string serverName = "";
 
-bool CreateServer()
+bool SimpleServer::CreateServer()
 {
     /* Bind the server to the default localhost.     */
     /* A specific host address can be specified by   */
@@ -28,7 +30,7 @@ bool CreateServer()
     return server != NULL;
 }
 
-void SendMessageToClient()
+void SimpleServer::SendMessageToClient()
 {
     string message;
     cout << "Enter q to quit" << endl;
@@ -51,7 +53,7 @@ void SendMessageToClient()
     cout << "Ending chat" << endl;
 }
 
-void RunServer()
+void SimpleServer::RunServer()
 {
     while (1)
     {
@@ -88,13 +90,13 @@ void RunServer()
     }
 }
 
-void InputServerName()
+void SimpleServer::InputServerName()
 {
     cout << "Enter a name for server: ";
     cin >> serverName;
 }
 
-int main(int argc, char** argv)
+int SimpleServer::main()
 {
     if (enet_initialize() != 0)
     {

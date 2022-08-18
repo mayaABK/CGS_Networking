@@ -4,12 +4,14 @@
 #include <thread>
 #include <string>
 
+#include "SimpleClient.h"
+
 using namespace std;
 
 ENetHost* simpleClient;
 string simpleClientName = "";
 
-bool CreateSimpleClient()
+bool SimpleClient::CreateSimpleClient()
 {
     simpleClient = enet_host_create(NULL /* create a client host */,
         1 /* only allow 1 outgoing connection */,
@@ -20,7 +22,7 @@ bool CreateSimpleClient()
     return simpleClient != NULL;
 }
 
-void ConnectToServer()
+void SimpleClient::ConnectToServer()
 {
     ENetAddress address;
     ENetEvent event;
@@ -52,7 +54,7 @@ void ConnectToServer()
     }
 }
 
-void SendMessageToServer()
+void SimpleClient::SendMessageToServer()
 {
     string message;
     cout << "Enter q to quit" << endl;
@@ -77,7 +79,7 @@ void SendMessageToServer()
     cout << "Ending chat" << endl;
 }
 
-void RunSimpleClient()
+void SimpleClient::RunSimpleClient()
 {
     while (1)
     {
@@ -96,13 +98,13 @@ void RunSimpleClient()
     }
 }
 
-void InputSimpleClientName()
+void SimpleClient::InputSimpleClientName()
 {
     cout << "Enter a name for client: ";
     cin >> simpleClientName;
 }
 
-int main(int argc, char** argv)
+int SimpleClient::main()
 {
     if (enet_initialize() != 0)
     {
@@ -121,8 +123,8 @@ int main(int argc, char** argv)
     InputSimpleClientName();
 
     ConnectToServer();
-    thread RunSimpleClientThread(RunSimpleClient);
-    thread SendMessageThread(SendMessageToServer);
+    thread RunSimpleClientThread(&RunSimpleClient);
+    thread SendMessageThread(&SendMessageToServer);
 
     RunSimpleClientThread.join();
     SendMessageThread.join();
